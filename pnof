@@ -1,0 +1,1431 @@
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import styles from "../styles/pnof.module.scss";
+import router from "next/router";
+import Link from "next/link";
+import { post, put } from "./api/api";
+import { convertToDateTimeLocalFormat } from "@/common-services/dateService";
+import { toast } from "react-hot-toast";
+import useSortableData from "@/common-services/useSortableData";
+import Loading from "@/common-services/loading";
+import Select from "react-select";
+import { DomHandler } from "primereact/utils";
+import { getCurrentDate } from "@/common-services/dateService";
+
+function Pnofform() {
+     const currentDate = getCurrentDate();
+     const [domLoaded, setDomLoaded] = useState(false);
+     const [searchTerm, setSearchTerm] = useState("");
+     const [PnofData, setPnofData] = useState([]);
+     const [loaderFlag, setLoaderFlag] = useState<any>("y");
+     const [filteredData, setFilteredData] = useState([]);
+     const [loading, setLoading] = useState(false);
+     const [countryList, setCountryList] = useState([]);
+     const [buttonName, setButtonName] = useState("UPDATE");
+     const { tableData, handleSort, sortConfig } =
+          useSortableData(filteredData);
+     const {
+          register: pnofform,
+          handleSubmit,
+          setValue,
+          reset,
+          formState: { errors },
+     } = useForm();
+     const [isRowSelected, setIsRowSelected] = useState();
+
+    //   const API_call = () => {
+    //        fetch(
+    //             `${process.env.NEXT_PUBLIC_API_URL}/pnof/pnofData`)
+    //             .then((res) => res.json())
+    //             .then((json) => {
+    //                  console.log(json.data);
+    //                  setPnofData(json.data);
+    //                  setLoaderFlag("n");
+    //                  handleSort("");
+    //                  setDomLoaded(true);
+    //             });
+    //   };
+
+     useEffect(() => {
+            // API_call();
+     }, []);
+
+     // const handleSelectFilter = (data: any) => {
+     //      console.log(data);
+     //      setLoaderFlag("y");
+     //      API_call();
+     // };
+
+    //  useEffect(() => {
+    //       handleSort("");
+
+    //       setFilteredData(
+    //            pnofData.filter((row) => {
+    //                 return Object.values(row).some(
+    //                      (value: any) =>
+    //                           value !== null &&
+    //                           value
+    //                                .toString()
+    //                                .toLowerCase()
+    //                                .includes(searchTerm.toLowerCase())
+    //                 );
+    //            })
+    //       );
+    //  }, [pnofData, searchTerm]);
+
+     const onSubmit = async (payload: any) => {
+          setLoading(true);
+          console.log(payload);
+
+          {
+               try {
+                    payload["STATUS"] = parseInt(payload["STATUS"]);
+                    // payload["SHIPPING_TIME_ID"] = "12345";
+                    // payload["CREATED_BY"] = "AJ185223";
+                    // payload["LAST_UPDATE_DATE"] = currentDate.toString();
+
+                    const response = await put("/pnof/update-enof", payload);
+                    console.log(response);
+                    toast.success(response.message);
+                    reset();
+                    setButtonName("UPDATE");
+                    setLoading(false);
+                    window.location.reload();
+               } catch (error) {
+                    reset();
+                    setLoading(false);
+                    console.error("Error:", error);
+                    setButtonName("UPDATE");
+                    toast.error("Something went wrong!");
+               }
+          }
+     };
+
+     const {
+          register: tableFilterForm,
+          handleSubmit: handleSubmitPayload,
+          control,
+          setValue: setValuePayload,
+          reset: resetPayload,
+          formState: { errors: errorsPayload },
+     } = useForm();
+
+     const editpnof = (data: any, index: any) => {
+          setButtonName("UPDATE");
+          setIsRowSelected(index);
+
+          // Row 1
+setValue("REQUEST_ID", data.REQUEST_ID ? data.REQUEST_ID : "");
+setValue("SUBMITTER", data.SUBMITTER ? data.SUBMITTER : "");
+setValue(
+    "CREATE_DATE",
+    data.CREATE_DATE
+        ? convertToDateTimeLocalFormat(data.CREATE_DATE)
+        : ""
+);
+setValue("ASSIGNED_TO", data.ASSIGNED_TO ? data.ASSIGNED_TO : "");
+setValue("LAST_MODIFIED_BY", data.LAST_MODIFIED_BY ? data.LAST_MODIFIED_BY : "");
+setValue(
+    "MODIFIED_DATE",
+    data.MODIFIED_DATE
+        ? convertToDateTimeLocalFormat(data.MODIFIED_DATE)
+        : ""
+);
+setValue("STATUS", data.STATUS);
+setValue("SHORT_DESCRIPTION", data.SHORT_DESCRIPTION ? data.SHORT_DESCRIPTION : "");
+setValue("BUYER_NAME", data.BUYER_NAME ? data.BUYER_NAME : "");
+setValue("PO_NUMBER", data.PO_NUMBER ? data.PO_NUMBER : "");
+setValue("SALES_ORDER_NUMBER", data.SALES_ORDER_NUMBER ? data.SALES_ORDER_NUMBER : "");
+setValue("VENDOR_NUMBER", data.VENDOR_NUMBER ? data.VENDOR_NUMBER : "");
+setValue("VENDOR_NAME", data.VENDOR_NAME ? data.VENDOR_NAME : "");
+setValue("CUSTOMER_NUMBER", data.CUSTOMER_NUMBER ? data.CUSTOMER_NUMBER : "");
+setValue("DOC_TYPE", data.DOC_TYPE ? data.DOC_TYPE : "");
+setValue("LOGISTICS_CENTRE", data.LOGISTICS_CENTRE ? data.LOGISTICS_CENTRE : "");
+setValue("OP_UNIT", data.OP_UNIT ? data.OP_UNIT : "");
+setValue("SOURCE", data.SOURCE ? data.SOURCE : "");
+setValue("COUNTRY", data.COUNTRY ? data.COUNTRY : "");
+setValue("DIRECTION", data.DIRECTION ? data.DIRECTION : "");
+setValue("PO_LINE", data.PO_LINE ? data.PO_LINE : "");
+setValue("PO_SHIPMENT", data.PO_SHIPMENT ? data.PO_SHIPMENT : "");
+setValue("PART_NUMBER", data.PART_NUMBER ? data.PART_NUMBER : "");
+setValue("QTY", data.QTY ? data.QTY : "");
+setValue("SO_LINE", data.SO_LINE ? data.SO_LINE : "");
+setValue("SUBINV", data.SUBINV ? data.SUBINV : "");
+setValue("ORG", data.ORG ? data.ORG : "");
+setValue("DELIVERY_ID", data.DELIVERY_ID ? data.DELIVERY_ID : "");
+
+// Repeat similar blocks for rows 2 to 6
+
+     };
+
+     const clearForm = () => {
+          reset();
+          setButtonName("UPDATE");
+     };
+     return (
+          <>
+               {/* <Loading loaderFlag={loaderFlag}></Loading> */}
+               <div className="common-view-page">
+                    <div className="common-view-body">
+                         <div className="common-page-desc">
+                              <div className="container-fluid">
+                                   <div className="row">
+                                        <div className="col-md-7">
+                                             <div className="common-page-heading">
+                                                  <p>PNOF</p>
+                                             </div>
+                                        </div>
+                                        <div className="col-md-5">
+                                             <ul className="common-header-btn">
+                                                  <li>
+                                                       <button
+                                                            className="header-back-btn"
+                                                            type="button"
+                                                       >
+                                                            {" "}
+                                                            <Link href="/home">
+                                                                 <i className="fa-solid fa-angle-left"></i>{" "}
+                                                                 Back
+                                                            </Link>
+                                                       </button>
+                                                  </li>
+                                             </ul>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div className="data-table-info">
+                              <div className="container-fluid">
+                                   <div className="row">
+                                        <div className="col-md-12">
+                                             <div className="data-table-list">
+                                                  <div className="data-table-header">
+                                                       <p>Pnof</p>
+
+                                                       <div className="tbl-search-tag">
+                                                            <input
+                                                                 type="search"
+                                                                 placeholder="Search your keywords..."
+                                                                 value={
+                                                                      searchTerm
+                                                                 }
+                                                                 onChange={(
+                                                                      e
+                                                                 ) =>
+                                                                      setSearchTerm(
+                                                                           e
+                                                                                .target
+                                                                                .value
+                                                                      )
+                                                                 }
+                                                                 className="form-control"
+                                                            />
+                                                            <i className="fas fa-search"></i>
+                                                       </div>
+                                                  </div>
+                                                  <div className="data-table-body">
+                                                       <table>
+                                                            <thead>
+                                                                 <tr>
+                                                                      <th
+                                                                           onClick={() =>
+                                                                                handleSort(
+                                                                                     "PNOF_ID"
+                                                                                )
+                                                                           }
+                                                                           data-sorting={
+                                                                                sortConfig.key ===
+                                                                                "PNOF_ID"
+                                                                                     ? sortConfig.direction
+                                                                                     : ""
+                                                                           }
+                                                                      >
+                                                                           PNOF ID{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                      <th
+                                                                           onClick={() =>
+                                                                                handleSort(
+                                                                                     "STATUS"
+                                                                                )
+                                                                           }
+                                                                           data-sorting={
+                                                                                sortConfig.key ===
+                                                                                "STATUS"
+                                                                                     ? sortConfig.direction
+                                                                                     : ""
+                                                                           }
+                                                                      >
+                                                                           STATUS{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                      <th
+                                                                           onClick={() =>
+                                                                                handleSort(
+                                                                                     "PART_NUMBER_REQUESTED"
+                                                                                )
+                                                                           }
+                                                                           data-sorting={
+                                                                                sortConfig.key ===
+                                                                                "PART_NUMBER_REQUESTED"
+                                                                                     ? sortConfig.direction
+                                                                                     : ""
+                                                                           }
+                                                                      >
+                                                                           Part Number Requested{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                      <th
+                                                                           onClick={() =>
+                                                                                handleSort(
+                                                                                     "PART_VENDOR"
+                                                                                )
+                                                                           }
+                                                                           data-sorting={
+                                                                                sortConfig.key ===
+                                                                                "PART_VENDOR"
+                                                                                     ? sortConfig.direction
+                                                                                     : ""
+                                                                           }
+                                                                      >
+                                                                           PART Vendor{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                      <th
+                                                                           onClick={() =>
+                                                                                handleSort(
+                                                                                     "P/N Assigned"
+                                                                                )
+                                                                           }
+                                                                           data-sorting={
+                                                                                sortConfig.key ===
+                                                                                "P/N Assigned"
+                                                                                     ? sortConfig.direction
+                                                                                     : ""
+                                                                           }
+                                                                      >
+                                                                           P/N Assigned{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                 </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                 {tableData.length ? (
+                                                                      tableData.map(
+                                                                           (
+                                                                                item: any,
+                                                                                index: number
+                                                                           ) => (
+                                                                                <tr
+                                                                                     key={
+                                                                                          index
+                                                                                     }
+                                                                                     onClick={() =>
+                                                                                          editpnof(
+                                                                                               item,
+                                                                                               index
+                                                                                          )
+                                                                                     }
+                                                                                     className={
+                                                                                          index ==
+                                                                                          isRowSelected
+                                                                                               ? "row-checked"
+                                                                                               : ""
+                                                                                     }
+                                                                                >
+                                                                                     <td>
+                                                                                          {
+                                                                                               item.SHORT_DESCRIPTION
+                                                                                          }
+                                                                                     </td>
+                                                                                </tr>
+                                                                           )
+                                                                      )
+                                                                 ) : (
+                                                                      <tr>
+                                                                           <td
+                                                                                colSpan={
+                                                                                     7
+                                                                                }
+                                                                           >
+                                                                                No
+                                                                                Content!
+                                                                           </td>
+                                                                      </tr>
+                                                                 )}
+                                                            </tbody>
+                                                       </table>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                         <div className={styles["order-form-level-one"]}>
+                              <form onSubmit={handleSubmit(onSubmit)}>
+                                   <div className="container-fluid">
+                                        <div className="row">
+                                             <div className="col-md-12">
+                                                  <div className="common-form">
+                                                       <div className="common-form-fields common-form-design">
+                                                            <div className="container-fluid ">
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Part Not on File Form
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Originator
+
+                                                                                </label>
+                                                                                <input
+                                                                                           {...pnofform(
+                                                                                            "ORIGINATOR"
+                                                                                       )}                                                                              value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+
+                                                                                     Create Date
+                                                                                </label>
+                                                                                <input
+                                                                                          {...pnofform("CREATE_DATE")}                                                                              value=""
+                                                                                     className="form-control" type='date'
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+
+                                                                                     PNOF ID
+                                                                                </label>
+                                                                                <input
+                                                                                          {...pnofform("CREATE_DATE")}                                                                              value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+
+                                                                                     Status
+                                                                                </label>
+                                                                                <input
+                                                                                          {...pnofform("CREATE_DATE")}                                                                              value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+
+                                                                                     Customer Locality
+                                                                                </label>
+                                                                                <input
+                                                                                          {...pnofform("CREATE_DATE")}                                                                              value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     <b>REQUESTOR INFORMATION</b>
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Requestors Name
+
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     [Terriory Code]
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Requestors Phone
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Email Address/Quick Look ID
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    NCR Region
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Pager
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Cell Phone
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Cell Phone Messaging
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Pager PIN
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     US Region
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     [Default Shipto]
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Deliver To   (Name not address)
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Address   (Address not name)
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Country
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Notify Method
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     [City]
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     [State/Province]
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     [Zip Code]
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Price List
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Override
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Customer #
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Service Planning Approval
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-4">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Addl Deliv Instr   (Courier Additional info)
+                                                                                </label>
+                                                                                <textarea
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col-md-4">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                    End Customer Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Customer Name
+
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-4">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Customer Contact Name
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-4">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Customer Contact Phone#
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Part Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    [Part Number Requested]
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+
+                                                                      </div>
+
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Part Vendor # Requested
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-1">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Qty
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Part Description Requested
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                    <div className="col-md-4 pe-0">
+                                                                        <div className="form-group float-left">
+                                                                            <ul className='small-btn-group'>
+                                                                                <li>
+                                                                                    <button type='button' className="small-btn f-size10" style={{ boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.3)", transform: "translateY(-2px)" }}>
+                                                                                        <span>BU Update New Part Info</span>
+                                                                                    </button>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <div style={{ paddingBottom: "15px", paddingLeft: "20px", fontWeight: "500" }}>
+                                 Part Information Assigned by Support Group
+                                                                    </div>
+                                                                    <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     P/N Assigned
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Part Vendor #Assigned
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Part Description Assigned
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     RoHs-Category
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     WEEE-Categories
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Class
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Model
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Supplier
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Buyer Name
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Service Planner Group
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     HIPAA_Categories
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Service Plan Approval/Denial
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Part Number ssigned
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Serial #
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     NRSPL
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Send to PSSP
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+
+                                                            </div>
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+
+
+                                                                           <div className="col-md-3">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Other Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Oracle Sales Order
+
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     UCC ID
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     D1 Work Order
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     PO Number CP/INT
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Priority Type
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     PNOF Sent to Purchasing
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Purchasing PO #
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     BU Link
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                            </div>
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Delay ETA Date/Time
+
+                                                                                </label>
+
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "OP_UNIT",
+
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Ref Status
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "PO_NUMBER",
+
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                                {errors.PO_NUMBER && (
+                                                                                     <span className="form-error">
+                                                                                          PO_NUMBER
+                                                                                     </span>
+                                                                                )}
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Tempvalue
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "PO_LINE"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Incident Date
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "PO_SHIPMENT"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Name
+
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "SALES_ORDER_NUMBER",
+                                                                                          {
+                                                                                               required:
+                                                                                                    true,
+                                                                                          }
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                                {errors.SALES_ORDER_NUMBER && (
+                                                                                     <span className="form-error">
+                                                                                          SALES_ORDER_NUMBER
+                                                                                     </span>
+                                                                                )}
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     ESC Level
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "SOURCE"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Next Ecaltion in Min
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "VENDOR_NAME"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Name2
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "PART_NUMBER"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Esc Me
+
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "CUSTOMER_NUMBER",
+
+                                                                                     )}
+                                                                                     readOnly
+                                                                                     className="form-control"
+
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Escalation Menthod
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "DIRECTION"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Next Escalation Time
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "DELIVERY_ID"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Source
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "SUBINV"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                 <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Support Group Contact
+                                                                                </label>
+                                                                                <select
+                                                                                     {...pnofform(
+                                                                                          "STATUS"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                >
+                                                                                     <option value="">
+                                                                                          Select
+                                                                                          Status
+                                                                                     </option>
+                                                                                     <option value="0">
+                                                                                          Open
+                                                                                     </option>
+                                                                                     <option value="1">
+                                                                                          Closed
+                                                                                     </option>
+                                                                                     <option value="2">
+                                                                                          Cancelled
+                                                                                     </option>
+                                                                                </select>
+                                                                                {/* {errors.STATUS && (
+                                                                                     <span className="form-error">
+                                                                                          STATUS
+                                                                                     </span>
+                                                                                )} */}
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-1">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     BU Name
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "QTY"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                                {/* {errors.STATUS && (
+                                                                                     <span className="form-error">
+                                                                                          STATUS
+                                                                                     </span>
+                                                                                )} */}
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Support Group Contact2
+                                                                                </label>
+                                                                                <input
+                                                                                     {...pnofform(
+                                                                                          "ORG"
+                                                                                     )}
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      </div>
+                                                                 <div className="row form-sub-section bg-white">
+                                                                      <div className="row">
+                                                                           <div className="col">
+                                                                                <div className="form-group">
+                                                                                     <label>
+                                                                                          Comments
+                                                                                     </label>
+                                                                                     <textarea
+                                                                                          {...pnofform(
+                                                                                               "SHORT_DESCRIPTION"
+                                                                                          )}
+                                                                                          className="form-control"
+                                                                                     />
+                                                                                </div>
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+
+                                                                 <div className="row">
+                                                                      <div className="col"></div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-12">
+                                                                           <div className="submit-btn-list">
+                                                                                <ul>
+                                                                                     <li>
+                                                                                          <button
+                                                                                               className="clear-btn"
+                                                                                               onClick={() =>
+                                                                                                    clearForm()
+                                                                                               }
+                                                                                          >
+                                                                                               CLEAR
+                                                                                          </button>
+                                                                                     </li>
+                                                                                     <li>
+                                                                                          <button className="cancel-btn">
+                                                                                               CANCEL
+                                                                                          </button>
+                                                                                     </li>
+                                                                                     <li>
+                                                                                          <button
+                                                                                               className="submit-btn"
+                                                                                               disabled={
+                                                                                                    loading
+                                                                                               }
+                                                                                          >
+                                                                                               {loading
+                                                                                                    ? "Loading..."
+                                                                                                    : `${buttonName}`}
+                                                                                          </button>
+                                                                                     </li>
+                                                                                </ul>
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </form>
+                         </div>
+                    </div>
+               </div>
+          </>
+     );
+}
+
+export default Pnofform;
