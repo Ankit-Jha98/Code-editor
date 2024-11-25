@@ -1,0 +1,1555 @@
+import React, { useEffect, useState } from "react";
+import styles from "../styles/order-form-level-one.module.scss";
+import router from "next/router";
+import Link from "next/link";
+import Loading from "@/common-services/loading";
+
+function GcewFscBusinessControl() {
+     const [domLoaded, setDomLoaded] = useState(false);
+     const [businessControlConfigData, setBusinessControlConfigData] = useState(
+          []
+     );
+     const [loaderFlag, setLoaderFlag] = useState<any>("y");
+
+     const API_call = () => {
+          // fetch('http://153.84.102.68:3500/business-control/all-business-control')
+          //     .then(res => res.json())
+          //     .then(json => {
+          //         setBusinessControlConfigData(json.data);
+          setLoaderFlag("n");
+          //         console.log(json)
+          //     });
+     };
+
+     useEffect(() => {
+          API_call();
+     }, []);
+
+     return (
+          <>
+               <Loading loaderFlag={loaderFlag}></Loading>
+               <div className="common-view-page">
+                    <div className="common-view-body">
+                         <div className="common-page-desc">
+                              <div className="container-fluid">
+                                   <div className="row">
+                                        <div className="col-md-7">
+                                             <div className="common-page-heading">
+                                                  <p>Business Control</p>
+                                             </div>
+                                        </div>
+                                        <div className="col-md-5">
+                                             <ul className="common-header-btn">
+                                                  <li>
+                                                       <button
+                                                            className="header-back-btn"
+                                                                                                                   >
+                                                            {" "}
+                                                            <Link href="/home">
+                                                                 <i className="fa-solid fa-angle-left"></i>{" "}
+                                                                 Back
+                                                            </Link>
+                                                       </button>
+                                                  </li>
+                                             </ul>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div className="data-table-info">
+                              <div className="container-fluid">
+                                   <div className="row">
+                                        <div className="col-md-12">
+                                             <div className="data-table-list">
+                                                  <div className="data-table-header">
+                                                       <p>
+                                                            Market Segmentation
+                                                            (Child)
+                                                       </p>
+                                                       {/* <div className="filter-form">
+                                                <ul>
+                                                    <li>
+                                                        <select className='form-control' name="" id="">
+                                                            <option selected value="">Select Country</option>
+                                                            <option value="INDIA">INDIA</option>
+                                                            <option value="ARGENTINA">ARGENTINA</option>
+                                                            <option value="AUSTRALIA">AUSTRALIA</option>
+                                                            <option value="AUSTRIA">AUSTRIA</option>
+                                                            <option value="BELGIUM">BELGIUM</option>
+                                                            <option value="CANADA">CANADA</option>
+                                                            <option value="CHILE">CHILE</option>
+                                                            <option value="COLOMBIA">COLOMBIA</option>
+                                                            <option value="FRANCE">FRANCE</option>
+                                                            <option value="GERMANY">GERMANY</option>
+                                                            <option value="HONG KONG ">HONG KONG </option>
+                                                            <option value="INDIA">INDIA</option>
+                                                            <option value="ITALY">ITALY</option>
+                                                            <option value="KOREA">KOREA</option>
+                                                            <option value="REPUBLIC OF">MALAYSIA</option>
+                                                            <option value="MEXICO">MEXICO</option>
+                                                            <option value="NETHERLANDS">NETHERLANDS</option>
+                                                            <option value="NEW ZEALAND">NEW ZEALAND</option>
+                                                            <option value="PHILIPPINES">PHILIPPINES</option>
+                                                            <option value="POLAND">POLAND</option>
+                                                            <option value="PORTUGAL">PORTUGAL</option>
+                                                            <option value="PUERTO RICO">PUERTO RICO</option>
+                                                            <option value="RUSSIAN FEDERATION">RUSSIAN FEDERATION</option>
+                                                            <option value="SINGAPORE">SINGAPORE</option>
+                                                            <option value="SPAIN">SPAIN</option>
+                                                            <option value="SWITZERLAND">SWITZERLAND</option>
+                                                            <option value="TAIWAN">TAIWAN</option>
+                                                            <option value="THAILAND">THAILAND</option>
+                                                            <option value="TURKEY">TURKEY</option>
+                                                            <option value="UNITED KINGDOM">UNITED KINGDOM</option>
+                                                            <option value="UNITED STATES">UNITED STATES</option>
+                                                            <option value="JAPAN">JAPAN</option>
+                                                            <option value="US Operating Unit">US Operating Unit</option>
+                                                            <option value="NL Operating Unit">NL Operating Unit</option>
+                                                            <option value="HO Operating Unit">HO Operating Unit</option>
+                                                            <option value="CHINA SERVICES JV">CHINA SERVICES JV</option>
+                                                            <option value="CHINA WCS WOFE">CHINA WCS WOFE</option>
+                                                            <option value="IRELAND">IRELAND</option>
+                                                            <option value="GIBRALTAR">GIBRALTAR</option>
+                                                            <option value="ISLE OF MAN">ISLE OF MAN</option>
+                                                        </select>
+                                                    </li>
+                                                    <li>
+                                                        <button Search</button>
+                                                    </li>
+                                                </ul>
+                                            </div> */}
+                                                       <div className="tbl-search-tag">
+                                                            <input
+                                                                                                                                  placeholder="Search your keywords..."
+                                                                 className="form-control"
+                                                            />
+                                                            <i className="fas fa-search"></i>
+                                                       </div>
+                                                  </div>
+                                                  <div className="data-table-body">
+                                                       <table>
+
+                                                            <thead>
+                                                                 <tr>
+                                                                      <th>
+                                                                           Request
+                                                                           ID{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                      <th>
+                                                                           Country
+                                                                           Code{" "}
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                      <th>
+                                                                           Country
+                                                                           <i className="fa-solid fa-arrow-down-wide-short"></i>
+                                                                      </th>
+                                                                 </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                 {businessControlConfigData.map(
+                                                                      (
+                                                                           item: any,
+                                                                           index: any
+                                                                      ) => (
+                                                                           <tr
+                                                                                key={
+                                                                                     index
+                                                                                }
+                                                                           >
+                                                                                <td>
+                                                                                     {
+                                                                                          item.RIM_MILEAGE_LIMIT
+                                                                                     }
+                                                                                </td>
+                                                                                <td>
+                                                                                     {
+                                                                                          item.COUNTRY_CODE
+                                                                                     }
+                                                                                </td>
+                                                                                <td>
+                                                                                     {
+                                                                                          item.COUNTRY
+                                                                                     }
+                                                                                </td>
+                                                                           </tr>
+                                                                      )
+                                                                 )}
+                                                            </tbody>
+                                                       </table>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div className={styles["order-form-level-one"]}>
+                              <div className="container-fluid">
+                                   <div className="row">
+                                        <div className="col-md-12">
+                                             <div className="common-form">
+                                                  <div className="common-form-fields common-form-design">
+                                                       <div className="container-fluid">
+
+                                                            <div className="row">
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Submitter
+                                                                           </label>
+
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+
+
+
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Record ID
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Created Date
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="N"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Last Updated By
+                                                                           </label>
+                                                                           <input
+
+
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                               Last Update Date/Time
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="IN"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Parent ID
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="IN"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                               Refrence ID
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="IN"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+
+
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Status
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="AVL"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Service Status
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="Bangalore"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-3">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Assignee
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="19:00:00"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           Work Order/SR#
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="19:00:00"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           D1 Create Date/Time
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="19:00:00"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+
+
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="col-md-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           CE Code
+                                                                                <small>
+                                                                                     *
+                                                                                </small>
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value="Prabhu"
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           CE Name
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                CE Employee Number
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           Region District Code
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           Business Service                                                                   </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Class
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Quantity
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Part Number
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                ETA Date/Time
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                ETA Time Zone
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Order Number
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Courier Job Number
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                               Courier
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Source Loc. Code
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              value=""
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                           Source Loc. City, State
+                                                                           </label>
+                                                                           <input
+                                                                                                                                                              className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-md-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Job                                                                   </label>
+                                                                           <input
+
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="col-2">
+                                                                      <div className="form-group">
+                                                                           <label>
+                                                                                Source                                                                   </label>
+                                                                           <input
+
+                                                                                className="form-control"
+                                                                           />
+                                                                      </div>
+                                                                 </div>
+
+                                                            </div>
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Alternate Shipping Info
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Alt.Country
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Alt. CC
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Escalation Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Escalate Time
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Esc Agent
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Group
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Person
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Check Escalation?
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Esc Ref Time
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                    Esc Courier
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                    Inventory Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Cross Reference
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Region Only
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Buddy Stock
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     CE Fund
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                eslfound
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+
+
+
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ESL Part
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ESL qty
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ESL Bin
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Tmp TZone
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                regionfound
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Inventory Search Status
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Region Part
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Region qty
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Region bin
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                View  Region
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Distance
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Outside Region found
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Out Part
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Out Qty
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Out bin
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     View All
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                P000
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                VMS
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ELCN
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Region 4 Lookup
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ESL 4 Lookup
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                   Pickup Location
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup Location Name
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup Locator Code
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup Address
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup City
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup State/Province
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup Zip Code
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Pickup Country
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Pickup CC
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+
+                                                            </div>
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Comments/Web
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Comment Alert In
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     Log
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Proof of Delivery
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                     POD Time Zone
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+</div>
+                                                            </div>
+                                                           <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Courier Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Service                                                                             <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Local Remedy Job #
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Resend
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value="3498235"
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Org Service                                                                        </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Courier Group
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row">
+                                                                 <div className="col">
+                                                                      <div className="row">
+                                                                           <div className="col">
+                                                                                <div className="form-group">
+                                                                                     <label>
+                                                                                     Translate Loc Code
+                                                                                          <small>
+                                                                                               *
+                                                                                          </small>
+                                                                                     </label>
+                                                                                     <input
+                                                                                                                                                                                  value="3498235"
+                                                                                          className="form-control"
+                                                                                     />
+                                                                                </div>
+                                                                           </div>
+
+                                                                           <div className="col">
+                                                                                <div className="form-group">
+                                                                                     <label>
+                                                                                     Translate CE Code
+                                                                                     </label>
+                                                                                     <input
+                                                                                                                                                                                  value=""
+                                                                                          className="form-control"
+                                                                                     />
+                                                                                </div>
+                                                                           </div>
+                                                                      </div>
+
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     Courier Information
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                D1 Msg Script
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ETA Notify
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Job ETA D1 Msg Sent
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value="3498235"
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+
+
+                                                                 </div>
+                                                            </div>
+                                                            <div className="row form-sub-section bg-white">
+                                                                 <div className="row">
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-sub-section-heading">
+                                                                                <h4>
+                                                                                     API Tab
+                                                                                </h4>
+                                                                           </div>
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                API Status
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-2">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                ES Notes Error Flag
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+
+                                                            </div>
+                                                            <div className="row form-sub-section">
+                                                                 <div className="row">
+                                                                      <div className="col-md-3">
+
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Remaining to Submit
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col-md-3">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                Remaining Status
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                CS Remaining
+                                                                                     <small>
+                                                                                          *
+                                                                                     </small>
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value="3498235"
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                                CS Remaining Status
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               HDS Part
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                       </div>
+                                                                 <div className="row">
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               HDS Part
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               HDS Part
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               Data Source
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               PU Locator Complete
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               Performance ACK Change
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               UCC ID
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                      <div className="col">
+                                                                           <div className="form-group">
+                                                                                <label>
+                                                                               FedEx Locator Code
+                                                                                </label>
+                                                                                <input
+                                                                                                                                                                        value=""
+                                                                                     className="form-control"
+                                                                                />
+                                                                           </div>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+
+                                                            <div className="row">
+                                                                 <div className="col-md-12">
+                                                                      <div className="submit-btn-list">
+                                                                           <ul>
+                                                                                <li>
+                                                                                     <button className="cancel-btn">
+                                                                                          CANCEL
+                                                                                     </button>
+                                                                                </li>
+                                                                                <li>
+                                                                                     <button className="submit-btn">
+                                                                                          UPDATE
+                                                                                     </button>
+                                                                                </li>
+                                                                           </ul>
+                                                                      </div>
+                                                                 </div>
+                                                            </div>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </>
+     );
+}
+
+export default GcewFscBusinessControl;
