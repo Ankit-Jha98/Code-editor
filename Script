@@ -1,0 +1,61 @@
+import { Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { DataSource } from 'typeorm';
+
+@Injectable()
+export class DataTransferService {
+  constructor(private dataSource: DataSource) {}
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async transferData() {
+    // Using queryRunner for transaction support
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Find eligible records
+      const records = await queryRunner.query(`
+        SELECT *
+        FROM EDI855B
+        WHERE status = 'open'
+        AND submitter = '3pl kn'
+        AND entry_id IS NOT NULL
+      `);
+
+      for (const record of records) {
+        // Insert into DO_OUTSTANDING_Order
+        await queryRunner.query(`
+          INSERT INTO DO_OUTSTANDING_Order (
+            assigned_to,
+            entry_id
+          ) VALUES (
+            :assigned_to,
+            :entry_id
+          )
+        `, {
+          assigned_to: record.assigned_to,
+          entry_id: record.entry_id
+        });
+
+        // Update status in EDI855B
+        await queryRunner.query(`
+          UPDATE EDI855B
+          SET 
+            status = 'closed',
+            comment = 'pushed'
+          WHERE entry_id = :entry_id
+        `, {
+          entry_id: record.entry_id
+        });
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      console.error('Error in data transfer:', err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+}
