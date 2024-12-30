@@ -59,3 +59,4 @@ export class DataTransferService {
     }
   }
 }
+#npm install @nestjs/schedule oracledb
