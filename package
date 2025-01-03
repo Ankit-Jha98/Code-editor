@@ -1,0 +1,226 @@
+     async getTaskDetails(itemNumber: any, cCode: any) {
+          let conn;
+          // conn = await oracledb.getConnection({
+          //   user: this.configService.get('DB_USERNAME'),
+          //   password: this.configService.get('DB_PASSWORD'),
+          //   connectString: this.configService.get('CONNECTION_STRRING')
+          // });
+
+          // conn = await oracledb.getConnection({
+          //   user: "lomdev",
+          //   password: "lomdev",
+          //   connectString: "153.84.116.28:1521/ebs_ESDEVW"
+          // });
+
+          conn = await oracledb.getConnection({
+               user: 'lom',
+               password: 'esprod#lom123',
+               connectString: '153.84.116.83:1521/ebs_ESUATW',
+               // connectString: "153.84.116.83:1521/ebs_ESUATA"
+          });
+
+          let query = `
+  DECLARE
+    l_clob CLOB;
+    l_tab ncr_lom_task_table;
+BEGIN
+    DBMS_LOB.CREATETEMPORARY(l_clob, TRUE);
+    DBMS_LOB.WRITEAPPEND(l_clob, 1, '[');
+    l_tab := ncr_lom_task_lookup_pkg.get_ncr_lom_task_lookup(:taskNumber,:country_code);
+FOR i IN 1..l_tab.COUNT LOOP
+        IF i != 1 THEN
+            DBMS_LOB.WRITEAPPEND(l_clob, 1, ',');
+        END IF;
+DBMS_LOB.WRITEAPPEND(l_clob, LENGTH('{"CREATEDBY":"' || l_tab(i).CreatedBy || '","CREATIONDATEGMT":"' || l_tab(i).CreationDateGMT || '","CREATIONDATELOCAL":"' || l_tab(i).CreationDateLocal || '","LASTUPDATEDBY":"' || l_tab(i).LastUpdatedBy || '","LASTUPDATEDATEGMT":"' || l_tab(i).LastUpdateDateGMT || '","LASTUPDATEDATELOCAL":"' || l_tab(i).LastUpdateDateLocal || '","TASKNUMBER":"' || l_tab(i).TaskNumber || '","TASKTYPE":"' || l_tab(i).TaskType || '","TASKSTATUS":"' || l_tab(i).TaskStatus || '","TASKSUBJECT":"' || l_tab(i).TaskSubject || '","TASKPRIORITY":"' || l_tab(i).TaskPriority || '","OU":"' || l_tab(i).org_code || '","PLANNEDSTARTDATEGMT":"' || l_tab(i).PlannedStartDateGMT || '","PLANNEDSTARTDATELOCAL":"' || l_tab(i).PlannedStartDateLocal || '","PLANNEDENDDATEGMT":"' || l_tab(i).PlannedEndDateGMT || '","PLANNEDENDDATELOCAL":"' || l_tab(i).PlannedEndDateLocal || '","SCHEDULEDSTARTDATEGMT":"' || l_tab(i).ScheduledStartDateGMT || '","SCHEDULEDSTARTDATELOCAL":"' || l_tab(i).ScheduledStartDateLocal || '","SCHEDULEDENDDATEGMT":"' || l_tab(i).ScheduledEndDateGMT || '","SCHEDULEDENDDATELOCAL":"' || l_tab(i).ScheduledEndDateLocal || '","ACTUALSTARTDATEGMT":"' || l_tab(i).ActualStartDateGMT || '","ACTUALSTARTDATELOCAL":"' || l_tab(i).ActualStartDateLocal || '","ACTUALENDDATEGMT":"' || l_tab(i).ActualEndDateGMT || '","ACTUALENDDATELOCAL":"' || l_tab(i).ActualEndDateLocal || '","DURATION":"' || TO_CHAR(l_tab(i).Duration) || '","DURATIONUOM":"' || l_tab(i).DurationUOM || '","PLANNEDEFFORT":"' || TO_CHAR(l_tab(i).PlannedEffort) || '","PLANNEDEFFORTUOM":"' || l_tab(i).PlannedEffortUOM || '","ACTUALEFFORT":"' || TO_CHAR(l_tab(i).ActualEffort) || '","ACTUALEFFORTUOM":"' || l_tab(i).ActualEffortUOM || '","REASONCODE":"' || l_tab(i).ReasonCode || '","ESCALATIONLEVEL":"' || l_tab(i).EscalationLevel || '","CALENDARSTARTDATEGMT":"' || l_tab(i).CalendarStartDateGMT || '","CALENDARSTARTDATELOCAL":"' || l_tab(i).CalendarStartDateLocal || '","CALENDARENDDATEGMT":"' || l_tab(i).CalendarEndDateGMT || '","CALENDARENDDATELOCAL":"' || l_tab(i).CalendarEndDateLocal || '","SCHEDULABLEFLAG":"' || l_tab(i).SchedulableFlag || '","TASKID":"' || TO_CHAR(l_tab(i).TaskId) || '","FIRSTNAME":"' || l_tab(i).FirstName || '","LASTNAME":"' || l_tab(i).LastName || '","FULLNAME":"' || l_tab(i).FullName || '","OWNERTERRITORY":"' || l_tab(i).OwnerTerritory || '","OWNER":"' || l_tab(i).Owner || '","SRNUMBER":"' || l_tab(i).srnumber || '","SRTYPE":"' || l_tab(i).srtype || '","SRPRIORITY":"' || l_tab(i).srpriority || '","SRSTATUS":"' || l_tab(i).srstatus || '","ATMMODELNO":"' || l_tab(i).atmmodelno || '","ATMSERIALNO":"' || l_tab(i).atmserialno || '","SLARESOLVEDBY":"' || l_tab(i).slaresolvedby || '","CUSTOMERNAME":"' || l_tab(i).customername || '","ACCOUNTNUMBER":"' || l_tab(i).accountnumber || '","CONTACTNAME":"' || l_tab(i).contactname || '","CONTACTPHONE":"' || l_tab(i).contactphone || '","SITEADDRESS":"' || l_tab(i).siteaddress1 || '","SITECITY":"' || l_tab(i).sitecity || '","SITEPROVINCE":"' || l_tab(i).siteprovince ||
+'","SITEPOSTALCODE":"' || l_tab(i).sitepostalcode || '"},'),'{"CREATEDBY":"' || l_tab(i).CreatedBy || '","CREATIONDATEGMT":"' || l_tab(i).CreationDateGMT || '","CREATIONDATELOCAL":"' || l_tab(i).CreationDateLocal || '","LASTUPDATEDBY":"' || l_tab(i).LastUpdatedBy || '","LASTUPDATEDATEGMT":"' || l_tab(i).LastUpdateDateGMT || '","LASTUPDATEDATELOCAL":"' || l_tab(i).LastUpdateDateLocal || '","TASKNUMBER":"' || l_tab(i).TaskNumber || '","TASKTYPE":"' || l_tab(i).TaskType || '","TASKSTATUS":"' || l_tab(i).TaskStatus || '","TASKSUBJECT":"' || l_tab(i).TaskSubject || '","TASKPRIORITY":"' || l_tab(i).TaskPriority || '","OU":"' || l_tab(i).org_code || '","PLANNEDSTARTDATEGMT":"' || l_tab(i).PlannedStartDateGMT || '","PLANNEDSTARTDATELOCAL":"' || l_tab(i).PlannedStartDateLocal || '","PLANNEDENDDATEGMT":"' || l_tab(i).PlannedEndDateGMT || '","PLANNEDENDDATELOCAL":"' || l_tab(i).PlannedEndDateLocal || '","SCHEDULEDSTARTDATEGMT":"' || l_tab(i).ScheduledStartDateGMT || '","SCHEDULEDSTARTDATELOCAL":"' || l_tab(i).ScheduledStartDateLocal || '","SCHEDULEDENDDATEGMT":"' || l_tab(i).ScheduledEndDateGMT || '","SCHEDULEDENDDATELOCAL":"' || l_tab(i).ScheduledEndDateLocal || '","ACTUALSTARTDATEGMT":"' || l_tab(i).ActualStartDateGMT || '","ACTUALSTARTDATELOCAL":"' || l_tab(i).ActualStartDateLocal || '","ACTUALENDDATEGMT":"' || l_tab(i).ActualEndDateGMT || '","ACTUALENDDATELOCAL":"' || l_tab(i).ActualEndDateLocal || '","DURATION":"' || TO_CHAR(l_tab(i).Duration) || '","DURATIONUOM":"' || l_tab(i).DurationUOM || '","PLANNEDEFFORT":"' || TO_CHAR(l_tab(i).PlannedEffort) || '","PLANNEDEFFORTUOM":"' || l_tab(i).PlannedEffortUOM || '","ACTUALEFFORT":"' || TO_CHAR(l_tab(i).ActualEffort) || '","ACTUALEFFORTUOM":"' || l_tab(i).ActualEffortUOM || '","REASONCODE":"' || l_tab(i).ReasonCode || '","ESCALATIONLEVEL":"' || l_tab(i).EscalationLevel || '","CALENDARSTARTDATEGMT":"' || l_tab(i).CalendarStartDateGMT || '","CALENDARSTARTDATELOCAL":"' || l_tab(i).CalendarStartDateLocal || '","CALENDARENDDATEGMT":"' || l_tab(i).CalendarEndDateGMT || '","CALENDARENDDATELOCAL":"' || l_tab(i).CalendarEndDateLocal || '","SCHEDULABLEFLAG":"' || l_tab(i).SchedulableFlag || '","TASKID":"' || TO_CHAR(l_tab(i).TaskId) || '","FIRSTNAME":"' || l_tab(i).FirstName || '","LASTNAME":"' || l_tab(i).LastName || '","FULLNAME":"' || l_tab(i).FullName || '","OWNERTERRITORY":"' || l_tab(i).OwnerTerritory || '","OWNER":"' || l_tab(i).Owner || '","SRNUMBER":"' || l_tab(i).srnumber || '","SRTYPE":"' || l_tab(i).srtype || '","SRPRIORITY":"' || l_tab(i).srpriority || '","SRSTATUS":"' || l_tab(i).srstatus || '","ATMMODELNO":"' || l_tab(i).atmmodelno || '","ATMSERIALNO":"' || l_tab(i).atmserialno || '","SLARESOLVEDBY":"' || l_tab(i).slaresolvedby || '","CUSTOMERNAME":"' || l_tab(i).customername || '","ACCOUNTNUMBER":"' || l_tab(i).accountnumber || '","CONTACTNAME":"' || l_tab(i).contactname || '","CONTACTPHONE":"' || l_tab(i).contactphone || '","SITEADDRESS":"' || l_tab(i).siteaddress1 || '","SITECITY":"' || l_tab(i).sitecity || '","SITEPROVINCE":"' || l_tab(i).siteprovince || '","SITEPOSTALCODE":"' || l_tab(i).sitepostalcode || '"},');
+FOR j IN 1..l_tab(i).notes.count LOOP
+IF j != 1 THEN
+            DBMS_LOB.WRITEAPPEND(l_clob, 1, ',');
+        END IF;
+DBMS_LOB.WRITEAPPEND(l_clob, LENGTH('{"NOTENUMBER":"' || l_tab(i).notes(j).notenumber || '","SOURCEOBJECTCODE":"' || l_tab(i).notes(j).sourceobjectcode || '","LASTUPDATEDATEGMT":"' || l_tab(i).notes(j).lastupdatedategmt || '","LASTUPDATEDATELOCAL":"' || l_tab(i).notes(j).lastupdatedatelocal || '","LASTUPDATEDBY":"' || l_tab(i).notes(j).lastupdatedby || '","CREATIONDATEGMT":"' || l_tab(i).notes(j).creationdategmt || '","CREATIONDATELOCAL":"' || l_tab(i).notes(j).creationdatelocal || '","CREATEDBY":"' || l_tab(i).notes(j).CreatedBy || '","NOTE":"' || l_tab(i).notes(j).note || '","NOTEDETAIL":"' || l_tab(i).notes(j).notedetail || '","NOTETYPE":"' || l_tab(i).notes(j).notetype || '","NOTESTATUS":"' || l_tab(i).notes(j).notestatus ||'"}'),
+'{"NOTENUMBER":"' || l_tab(i).notes(j).notenumber || '","SOURCEOBJECTCODE":"' || l_tab(i).notes(j).sourceobjectcode || '","LASTUPDATEDATEGMT":"' || l_tab(i).notes(j).lastupdatedategmt || '","LASTUPDATEDATELOCAL":"' || l_tab(i).notes(j).lastupdatedatelocal || '","LASTUPDATEDBY":"' || l_tab(i).notes(j).lastupdatedby || '","CREATIONDATEGMT":"' || l_tab(i).notes(j).creationdategmt || '","CREATIONDATELOCAL":"' || l_tab(i).notes(j).creationdatelocal || '","CREATEDBY":"' || l_tab(i).notes(j).CreatedBy || '","NOTE":"' || l_tab(i).notes(j).note || '","NOTEDETAIL":"' || l_tab(i).notes(j).notedetail || '","NOTETYPE":"' || l_tab(i).notes(j).notetype || '","NOTESTATUS":"' || l_tab(i).notes(j).notestatus || '"}');
+END LOOP;
+END LOOP;
+DBMS_LOB.WRITEAPPEND(l_clob, 1, ']');
+    :result := l_clob;
+    DBMS_LOB.FREETEMPORARY(l_clob);
+END;`;
+
+          let data = await conn.execute(query, {
+               result: { dir: oracledb.BIND_OUT, type: oracledb.CLOB },
+               taskNumber: {
+                    dir: oracledb.BIND_IN,
+                    val: itemNumber,
+                    type: oracledb.STRING,
+               },
+               country_code: {
+                    dir: oracledb.BIND_IN,
+                    val: cCode,
+                    type: oracledb.STRING,
+               },
+          });
+
+          let clob = data.outBinds.result;
+          return new Promise((resolve, reject) => {
+               clob.setEncoding('utf8');
+               let result = '';
+               clob.on('data', function (chunk) {
+                    result += chunk;
+               });
+
+               clob.on('end', function () {
+                    console.log(result);
+
+                    let sanitizedResult = result.replace(
+                         /[\n\r\t]/g,
+                         function (char) {
+                              switch (char) {
+                                   case '\n':
+                                        return '\\n';
+                                   case '\r':
+                                        return '\\r';
+                                   case '\t':
+                                        return '\\t';
+                                   default:
+                                        return char;
+                              }
+                         },
+                    );
+
+                    let finalResult = JSON.parse(sanitizedResult);
+                    // console.log(finalResult);
+                    let response = {
+                         message: 'Task details fetched successfully',
+                         data: finalResult,
+                    };
+                    if (finalResult.lenght) {
+                         resolve(response);
+                    } else {
+                         let response = {
+                              message: 'Task details fetched successfully',
+                              data: finalResult,
+                         };
+                         resolve(response);
+                    }
+               });
+
+               clob.on('error', function (err) {
+                    reject(err);
+               });
+          });
+     }
+
+     async partLookup(partLookUpDto: PartLookUpDto) {
+          // const conn = await oracledb.getConnection({
+          //   user: this.configService.get('DB_USERNAME'),
+          //   password: this.configService.get('DB_PASSWORD'),
+          //   connectString: this.configService.get('CONNECTION_STRRING')
+          // });
+
+          // const conn = await oracledb.getConnection({
+          //   user: "lomdev",
+          //   password: "lomdev",
+          //   connectString: "153.84.116.28:1521/ebs_ESDEVW"
+          // });
+
+          const conn = await oracledb.getConnection({
+               user: 'lom',
+               password: 'esprod#lom123',
+               connectString: '153.84.116.83:1521/ebs_ESUATW',
+          });
+
+          let query = `
+  DECLARE
+    l_clob CLOB;
+    l_tab NCR_LOM_PART_LOOKUP_TABLE;
+  BEGIN
+    DBMS_LOB.CREATETEMPORARY(l_clob, TRUE);
+    l_tab := NCR_LOM_INVENTORY_LOOKUP_PKG.get_ncr_lom_part_lookup(:p_op_unit, :p_part_no, :p_inv_org, :p_subinventory, :p_sub_type, :p_sub_flag, :p_avl_or_onhand, :p_region_flag, :p_locator_flag);
+
+    DBMS_LOB.WRITEAPPEND(l_clob, 1, '[');
+
+    FOR i IN 1..l_tab.COUNT LOOP
+      IF i != 1 THEN
+        DBMS_LOB.WRITEAPPEND(l_clob, 1, ',');
+      END IF;
+
+      DBMS_LOB.WRITEAPPEND(l_clob, LENGTH('{"OP_UNIT":"' || l_tab(i).op_unit || '","REGION":"' || l_tab(i).region || '","PART_NO":"' || l_tab(i).part_no || '","INV_ORG":"' || l_tab(i).inv_org || '","SITE_NAME":"' || l_tab(i).site_name || '","ON_HAND_QTY":"' || TO_CHAR(l_tab(i).on_hand_qty) || '","AVL_QTY":"' || TO_CHAR(l_tab(i).avl_qty) || '","SUBINV":"' || l_tab(i).subinv || '","LOCATION_TYPE":"' || l_tab(i).location_type || '","SUB_TYPE":"' || l_tab(i).sub_type || '","LOCATOR":"' || l_tab(i).locator || '","XREF_INDICATOR":"' || l_tab(i).xref_indicator || '","DISCR_QTY":"' || TO_CHAR(l_tab(i).discr_qty) || '","CSR_CODE":"' || l_tab(i).csr_code || '","CE_NAME":"' || l_tab(i).CE_NAME || '"}'), '{"OP_UNIT":"' || l_tab(i).op_unit || '","REGION":"' || l_tab(i).region || '","PART_NO":"' || l_tab(i).part_no || '","INV_ORG":"' || l_tab(i).inv_org || '","SITE_NAME":"' || l_tab(i).site_name || '","ON_HAND_QTY":"' || TO_CHAR(l_tab(i).on_hand_qty) || '","AVL_QTY":"' || TO_CHAR(l_tab(i).avl_qty) || '","SUBINV":"' || l_tab(i).subinv || '","LOCATION_TYPE":"' || l_tab(i).location_type || '","SUB_TYPE":"' || l_tab(i).sub_type || '","LOCATOR":"' || l_tab(i).locator || '","XREF_INDICATOR":"' || l_tab(i).xref_indicator || '","DISCR_QTY":"' || TO_CHAR(l_tab(i).discr_qty) || '","CSR_CODE":"' || l_tab(i).csr_code  || '","CE_NAME":"' || l_tab(i).CE_NAME || '"}');
+    END LOOP;
+
+    DBMS_LOB.WRITEAPPEND(l_clob, 1, ']');
+    :result := l_clob;
+    DBMS_LOB.FREETEMPORARY(l_clob);
+  END;`;
+
+          let data = await conn.execute(query, {
+               result: { dir: oracledb.BIND_OUT, type: oracledb.CLOB },
+               p_op_unit: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_op_unit,
+                    type: oracledb.STRING,
+               },
+               p_part_no: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_part_no,
+                    type: oracledb.STRING,
+               },
+               p_inv_org: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_inv_org,
+                    type: oracledb.STRING,
+               },
+               p_subinventory: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_subinventory,
+                    type: oracledb.STRING,
+               },
+               p_sub_type: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_sub_type,
+                    type: oracledb.STRING,
+               },
+               p_sub_flag: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_sub_flag,
+                    type: oracledb.STRING,
+               },
+               p_avl_or_onhand: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_avl_or_onhand,
+                    type: oracledb.STRING,
+               },
+               p_region_flag: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_region_flag,
+                    type: oracledb.STRING,
+               },
+               p_locator_flag: {
+                    dir: oracledb.BIND_IN,
+                    val: partLookUpDto.p_locator_flag,
+                    type: oracledb.STRING,
+               },
+          });
+
+          let clob = data.outBinds.result;
+          return new Promise((resolve, reject) => {
+               clob.setEncoding('utf8');
+               let result = '';
+               clob.on('data', function (chunk) {
+                    result += chunk;
+               });
+
+               clob.on('end', function () {
+                    // console.log(result);
+                    let finalResult = JSON.parse(result);
+                    console.log(finalResult);
+                    let response = {
+                         message: 'Task fetched successfully',
+                         data: finalResult,
+                    };
+                    resolve(response);
+               });
+               clob.on('error', function (err) {
+                    reject(err);
+               });
+          });
+     }
