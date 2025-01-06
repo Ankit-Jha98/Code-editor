@@ -1,0 +1,343 @@
+async partProcess(partProcessDto: PartProcessDto) {
+          console.log(partProcessDto);
+
+          console.log(
+               'RW=' +
+                    partProcessDto.RW_Y +
+                    ' CUST=' +
+                    partProcessDto.CUSTOMER_NAME.substring(0, 40),
+          );
+          console.log(
+               'SITE=' +
+                    partProcessDto.CE_CODE +
+                    ' TASK=' +
+                    partProcessDto.TASK_NUMBER +
+                    ' ACC=' +
+                    partProcessDto.CE_NAME.substring(0, 18),
+          );
+
+          let connection;
+          try {
+              
+
+               connection = await oracledb.getConnection({
+                    user: 'lom',
+                    password: 'esprod#lom123',
+                    connectString: '153.84.116.28:1521/ebs_ESDEVW',
+               });
+
+               const result = await connection.execute(
+                    `BEGIN ncr_PL_ORDIMP_PKG.NCR_PL_ORDIMP_PROC(:p_process_name, :p_message_key, :p_send_date, :p_user_name, :p_source_system_name, :p_source_system_sid, :p_address_number, :p_creation_date, :p_order_source_name, :p_original_system_reference, :p_part_number, :p_quantity, :p_line_number, :p_entered_state, :p_subinventory, :p_exchange_flag, :p_priority, :p_ship_method_code, :p_carrier, :p_service, :p_packing_instructions, :p_shipping_instructions, :p_purchase_order_num, :p_credit_card_approval_code, :p_csms_from_loc, :p_order_type, :p_customer_number, :p_request_date,:p_schedule_ship_date, :p_price_list, :p_unit_selling_price, :p_dest_inv_org, :p_source_inv_org, :p_dest_subinv, :p_iso_country_ou, :p_location_type, :p_task_id, :p_lom_svg_no, :p_LOM_Override, :p_LOM_Deliver_To, :p_LOM_Address, :p_LOM_Addl_Dlvry_Instr, :p_LOM_City, :p_LOM_State, :p_LOM_PostalCode, :p_LOM_Country, :p_need_by_date, :p_promise_date, :p_error_code, :p_error_message, :p_timestamp, :p_intmd_ship_orgid); END;`,
+                    {
+                         p_process_name: {
+                              dir: oracledb.BIND_IN,
+                              val: 'ESLOM',
+                              type: oracledb.STRING,
+                         },
+                         p_message_key: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.LOM_ID.toString(),
+                              type: oracledb.STRING,
+                         }, //international_ucc_id
+                         p_send_date: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.C_DATE_TIME,
+                              type: oracledb.STRING,
+                         }, //10-JUL-2024 20:05:52 today data time
+                         p_user_name: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         },
+                         p_source_system_name: {
+                              dir: oracledb.BIND_IN,
+                              val: 'LOM',
+                              type: oracledb.STRING,
+                         },
+                         p_source_system_sid: {
+                              dir: oracledb.BIND_IN,
+                              val: 'LOM',
+                              type: oracledb.STRING,
+                         },
+                         p_address_number: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.ACTUAL_DEFAULT_SHIPTO,
+                              type: oracledb.STRING,
+                         }, //Default Shipto
+                         p_creation_date: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.C_DATE,
+                              type: oracledb.STRING,
+                         }, //Create Date
+                         p_order_source_name: {
+                              dir: oracledb.BIND_IN,
+                              val: 'LOM',
+                              type: oracledb.STRING,
+                         },
+                         p_original_system_reference: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.LOM_ID.toString(),
+                              type: oracledb.STRING,
+                         }, //international_ucc_id
+                         p_part_number: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.PART_NUMBER,
+                              type: oracledb.STRING,
+                         },
+                         p_quantity: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.QUANTITY,
+                              type: oracledb.NUMBER,
+                         },
+                         p_line_number: {
+                              dir: oracledb.BIND_IN,
+                              val: 1,
+                              type: oracledb.NUMBER,
+                         }, //1 hardcoded
+                         p_entered_state: {
+                              dir: oracledb.BIND_IN,
+                              val: 'BOOKED',
+                              type: oracledb.STRING,
+                         },
+                         p_subinventory: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.ESL_W_INVENTORY,
+                              type: oracledb.STRING,
+                         }, //ESL W/Inventory
+                         p_exchange_flag: {
+                              dir: oracledb.BIND_IN,
+                              val: 'N',
+                              type: oracledb.STRING,
+                         }, // N always
+                         p_priority: {
+                              dir: oracledb.BIND_IN,
+                              val:
+                                   partProcessDto.ORDER_TYPE == '1'
+                                        ? 'NFO'
+                                        : 'OVERNIGHT',
+                              type: oracledb.STRING,
+                         }, //Order Type (OVERNIGHT-> next day | same day->NFO | regular -> regular)// about regular need discussion
+                         p_ship_method_code: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, //
+                         p_carrier: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.CARRIER_CHOICE,
+                              type: oracledb.STRING,
+                         }, //Carrier Choice//will discuss
+                         p_service: {
+                              dir: oracledb.BIND_IN,
+                              val:
+                                   partProcessDto.ORDER_TYPE == '0'
+                                        ? 'Next Day'
+                                        : partProcessDto.ORDER_TYPE == '1'
+                                          ? 'Same Day'
+                                          : partProcessDto.ORDER_TYPE == '2'
+                                            ? 'Regular'
+                                            : '',
+                              type: oracledb.STRING,
+                         }, //eg. Next Day
+                         p_packing_instructions: {
+                              dir: oracledb.BIND_IN,
+                              val:
+                                   'RW=' +
+                                   partProcessDto.RW_Y +
+                                   ' CUST=' +
+                                   partProcessDto.CUSTOMER_NAME.substring(
+                                        0,
+                                        40,
+                                   ),
+                              type: oracledb.STRING,
+                         },
+                         p_shipping_instructions: {
+                              dir: oracledb.BIND_IN,
+                              val:
+                                   'SITE=' +
+                                   partProcessDto.CE_CODE +
+                                   ' TASK=' +
+                                   partProcessDto.TASK_NUMBER +
+                                   ' ACC=' +
+                                   partProcessDto.CE_NAME.substring(0, 18),
+                              type: oracledb.STRING,
+                         },
+                         p_purchase_order_num: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.LOM_ID.toString(),
+                              type: oracledb.STRING,
+                         }, // LOM Id
+                         p_credit_card_approval_code: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, //null
+                         p_csms_from_loc: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, //null
+                         p_order_type: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_customer_number: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.CUSTOMER_NUMBER,
+                              type: oracledb.STRING,
+                         }, //CUSTOMER_NUMBER from table NCR_LOM_CE_SHIPTOS
+                         p_request_date: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_schedule_ship_date: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_price_list: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_unit_selling_price: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_dest_inv_org: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.TASK_OU + 'P',
+                              type: oracledb.STRING,
+                         }, //  OU+'P'
+                         p_source_inv_org: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.INV_ORG,
+                              type: oracledb.STRING,
+                         }, //  Inv Org(before Distance field)
+                         p_dest_subinv: {
+                              dir: oracledb.BIND_IN,
+                              // val: partProcessDto.CE_EMPLOYEE_NUMBER,
+                              val : "IN008329G",
+                              type: oracledb.STRING,
+                         }, // WAREHOUSE_NAME from NCR_LOM_CE_SHIPTOS on CE details
+                         p_iso_country_ou: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_location_type: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, // always null
+                         p_task_id: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.TASK_NUMBER,
+                              type: oracledb.STRING,
+                         }, //task number
+                         p_lom_svg_no: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.LOM_ID.toString(),
+                              type: oracledb.STRING,
+                         }, //Lom Id
+                         p_LOM_Override: {
+                              dir: oracledb.BIND_IN,
+                              val:
+                                   partProcessDto.Dest_Override == 'Y'
+                                        ? 'YES'
+                                        : 'NO',
+                              type: oracledb.STRING,
+                         }, //YES or NO
+                         p_LOM_Deliver_To: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.DELIVER_TO,
+                              type: oracledb.STRING,
+                         }, //Deliver To (Name not address)
+                         p_LOM_Address: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.ADDRESS2,
+                              type: oracledb.STRING,
+                         }, //Address (Address not name)
+                         p_LOM_Addl_Dlvry_Instr: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.ADDI_DELIVERY_INSTRUCTION,
+                              type: oracledb.STRING,
+                         }, //Addl Deliv Instr (Courier Additional Info)
+                         p_LOM_City: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.CITY,
+                              type: oracledb.STRING,
+                         }, //City
+                         p_LOM_State: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.STATE_PROVINCE,
+                              type: oracledb.STRING,
+                         }, //Province
+                         p_LOM_PostalCode: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.ZIP_CODE,
+                              type: oracledb.STRING,
+                         }, //Postal Code
+                         p_LOM_Country: {
+                              dir: oracledb.BIND_IN,
+                              val: partProcessDto.COUNTRY_NAME,
+                              type: oracledb.STRING,
+                         }, //Country Name
+                         p_need_by_date: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, //null
+                         p_promise_date: {
+                              dir: oracledb.BIND_IN,
+                              val: null,
+                              type: oracledb.STRING,
+                         }, //null
+
+                         p_error_code: {
+                              dir: oracledb.BIND_OUT,
+                              type: oracledb.STRING,
+                         },
+                         p_error_message: {
+                              dir: oracledb.BIND_OUT,
+                              type: oracledb.STRING,
+                         },
+                         p_timestamp: {
+                              dir: oracledb.BIND_OUT,
+                              type: oracledb.STRING,
+                         },
+                         p_intmd_ship_orgid: {
+                              dir: oracledb.BIND_IN,
+                              val: '',
+                              type: oracledb.STRING,
+                         },
+                    },
+               );
+               // Extract the result
+               // const functionResult = result.outBinds.ret;
+               // console.log(functionResult);
+               // return functionResult;
+
+               let response = {
+                    message: 'Order created successfully',
+                    data: result.outBinds,
+               };
+               // resolve(response);
+               return response;
+          } catch (err) {
+               console.error('Error calling Oracle function', err);
+               throw err;
+          } finally {
+               if (connection) {
+                    try {
+                         // Always close connections
+                         await connection.close();
+                    } catch (err) {
+                         console.error('Error closing connection', err);
+                    }
+               }
+          }
+     }
