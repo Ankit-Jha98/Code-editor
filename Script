@@ -8,7 +8,7 @@ oracledb.initOracleClient({
 
 // Database connection configuration
 const config = {
-  
+    
 };
 
 async function fetchData() {
@@ -42,22 +42,15 @@ async function fetchData() {
 
         console.log(jsonData); // Log the final jsonData to verify the output
 
-        // Update the target table with the fetched data
+        // Insert the fetched data into the target table
         for (const data of jsonData) {
             if (data.entryId !== null) {
                 await connection.execute(
-                    `UPDATE NCR_LOM_Do_OutStanding_Orders
-                     SET assigned_to = :assignedTo,              -- Mapped field
-                         msc_code = :msc,                        -- Mapped field
-                         work_order_number = :workOrder,         -- Mapped field
-                         entry_id_ref = :entryId,                -- Mapped field
-                         supplier_comments_text = :supplierComments,  -- Mapped field
-                         issue_type = :type,                     -- Mapped field
-                         po_number = :ncrPoNumber,               -- Mapped field
-                         order_quantity = :poOrderQty,           -- Mapped field
-                         pn_ordered = :ncrPNOrderd,              -- Mapped field
-                         order_status = :status                  -- Mapped field
-                     WHERE entry_id_ref = :entryId`,             -- Mapped field
+                    `INSERT INTO NCR_LOM_Do_OutStanding_Orders
+                     (assigned_to, msc_code, work_order_number, entry_id_ref, supplier_comments_text, 
+                      issue_type, po_number, order_quantity, pn_ordered, order_status)
+                     VALUES (:assignedTo, :msc, :workOrder, :entryId, :supplierComments, 
+                             :type, :ncrPoNumber, :poOrderQty, :ncrPNOrderd, :status)`,
                     {
                         assignedTo: data.assignedTo,
                         msc: data.msc,
@@ -77,7 +70,7 @@ async function fetchData() {
                 await connection.execute(
                     `UPDATE LOM.NCR_LOM_EDI855B
                      SET status = 2
-                     WHERE entryId = :entryId`,
+                     WHERE entry_id = :entryId`,
                     { entryId: data.entryId },
                     { autoCommit: false } // Disable autoCommit for batch processing
                 );
@@ -87,9 +80,9 @@ async function fetchData() {
         // Commit the transaction after all updates
         await connection.commit();
 
-        console.log('Data updated successfully');
+        console.log('Data inserted and status updated successfully');
     } catch (err) {
-        console.error('Error fetching or updating data:', err);
+        console.error('Error fetching or inserting data:', err);
     } finally {
         if (connection) {
             try {
