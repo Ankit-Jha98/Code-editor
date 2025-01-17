@@ -1,62 +1,106 @@
-import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { DataSource } from 'typeorm';
+const oracledb = require('oracledb');
+// const cron = require('node-cron');
 
-@Injectable()
-export class DataTransferService {
-  constructor(private dataSource: DataSource) {}
+// Initialize Oracle Client
+oracledb.initOracleClient({
+     libDir: 'C:\\Instant_client\\instantclient_12_1 1\\instantclient_12_1',
+});
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
-  async transferData() {
-    // Using queryRunner for transaction support
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+// Database connection configuration
+const config = {
+     user: 'lom',
+     password: 'esprod#lom123',
+     connectString: '153.84.116.83:1521/ebs_ESUATW',
+};
 
-    try {
-      // Find eligible records
-      const records = await queryRunner.query(`
-        SELECT *
-        FROM EDI855B
-        WHERE status = 'open'
-        AND submitter = '3pl kn'
-        AND entry_id IS NOT NULL
-      `);
+async function fetchData() {
+     let connection;
 
-      for (const record of records) {
-        // Insert into DO_OUTSTANDING_Order
-        await queryRunner.query(`
-          INSERT INTO DO_OUTSTANDING_Order (
-            assigned_to,
-            entry_id
-          ) VALUES (
-            :assigned_to,
-            :entry_id
-          )
-        `, {
-          assigned_to: record.assigned_to,
-          entry_id: record.entry_id
-        });
+     try {
+          // Connect to the database
+          connection = await oracledb.getConnection(config);
 
-        // Update status in EDI855B
-        await queryRunner.query(`
-          UPDATE EDI855B
-          SET 
-            status = 'closed',
-            comment = 'pushed'
-          WHERE entry_id = :entry_id
-        `, {
-          entry_id: record.entry_id
-        });
-      }
+          // Query to fetch data from the table where status = 1
+          const result = await connection.execute(
+               'SELECT * FROM LOM.NCR_LOM_EDI855B WHERE status = 1',
+          );
 
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      console.error('Error in data transfer:', err);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
-  }
+          // Extract and log only the rows
+          const jsonData = result.rows.map(row => {
+               console.log(row); // Log each row to verify its structure
+               return {
+                    assignedTo: "Customer Services",
+                    msc: "MSPDEF",
+                    workOrder: row[33],
+                    entryId: row[32],
+                    supplierComments: row[8],
+                    type: "Def no Stock",
+                    ncrPoNumber: row[9],
+                    poOrderQty: row[12],
+                    ncrPNOrderd: row[11],
+                    status: row[6]
+               };
+           });
+
+           console.log(jsonData); // Log the final jsonData to verify the output
+
+          // Update the target table with the fetched data
+          for (const data of jsonData) {
+               if (data.entry_Id !== null) {
+                    await connection.execute(
+                         `UPDATE NCR_LOM_Do_OutStanding_Orders
+                          SET assignedTo = :assignedTo,
+                              msc = :msc,
+                              workOrder = :workOrder,
+                              entryId = :entryId,
+                              supplierComments = :supplierComments,
+                              type = :type,
+                              ncrPoNumber = :ncrPoNumber,
+                              poOrderQty = :poOrderQty,
+                              ncrPNOrderd = :ncrPNOrderd,
+                              status = :status
+                          WHERE entry_id = :entryId`,
+                         {
+                              assignedTo: data.assignedTo,
+                              msc: data.msc,
+                              work_Order: data.work_Order,
+                              entry_Id: data.entry_Id,
+                              supplier_Comments: data.supplier_Comments,
+                              type: data.type,
+                              ncr_PoNumber: data.ncrPoNumber,
+                              poOrderQty: data.poOrderQty,
+                              ncrPNOrderd: data.ncrPNOrderd,
+                              status: data.status
+                         },
+                         { autoCommit: true }
+                    );
+
+                    // Update the status in LOM.NCR_LOM_EDI855B to 2
+                    await connection.execute(
+                         `UPDATE LOM.NCR_LOM_EDI855B
+                          SET status = 2
+                          WHERE entry_id = :entryId`,
+                         { entryId: data.entryId },
+                         { autoCommit: true }
+                    );
+               }
+          }
+
+          console.log('Data updated successfully');
+     } catch (err) {
+          console.error('Error fetching or updating data:', err);
+     } finally {
+          if (connection) {
+               try {
+                    // Close the database connection
+                    await connection.close();
+               } catch (err) {
+                    console.error('Error closing connection:', err);
+               }
+          }
+     }
 }
-#npm install @nestjs/schedule oracledb
+fetchData();
+
+// Schedule the fetchData function to run every 5 minutes
+// cron.schedule('*/5 * * * *', fetchData);
