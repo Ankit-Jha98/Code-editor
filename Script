@@ -8,9 +8,7 @@ oracledb.initOracleClient({
 
 // Database connection configuration
 const config = {
-     user: 'lom',
-     password: 'esprod#lom123',
-     connectString: '153.84.116.83:1521/ebs_ESUATW',
+  
 };
 
 async function fetchData() {
